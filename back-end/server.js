@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({
 // parse application/json
 app.use(bodyParser.json());
 
-let products = [];
+let products = [{"id":-1, "name":"Apples", "price":"$0.47"}, {"id":-2, "name":"Baby Corn Dogs", "price":"$11.49"}, {"id":-3, "name":"Popcorn Maker", "price":"$29.99"}, {"id":-4, "name":"Breakfast Sausage", "price":"$14.99"}, {"id":-5, "name":"Doughnut", "price":"$0.59"}, {"id":-6, "name":"Guacamole", "price":"$4.79"}];
 let id = 0;
 let cart = [];
 

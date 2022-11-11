@@ -38,6 +38,42 @@ function App() {
     }
   }
 
+  const deleteProductFromCart = async(productId) => {
+    try {
+      await axios.delete("/api/cart/" + productId);
+    } catch(error) {
+      setError("error adding product to cart: " + error);
+    }
+  }
+  
+  const decrementOneProduct = async(cartProduct) => {
+    try {
+      if(cartProduct.quantity <2) {
+        //delete the product
+        await axios.delete("/api/cart/" + cartProduct.id);
+      } else {
+        // decrement it by one
+        let newQuantity = cartProduct.quantity - 1;
+        console.log("cartProduct.id: " + cartProduct.id + ", newQuantity: " + newQuantity)
+        console.log("/api/cart/" + cartProduct.id + "/" + newQuantity)
+        await axios.put("/api/cart/" + cartProduct.id + "/" + newQuantity);
+      }
+    } catch(error) {
+      setError("error adding product to cart: " + error);
+    }
+  }
+  
+  const incrementOneProduct = async(cartProduct) => {
+    try {
+      let newQuantity = cartProduct.quantity + 1;
+      console.log("cartProduct.id: " + cartProduct.id + ", newQuantity: " + newQuantity)
+      console.log("/api/cart/" + cartProduct.id + "/" + newQuantity)
+      await axios.put("/api/cart/" + cartProduct.id + "/" + newQuantity);
+    } catch(error) {
+      setError("error adding product to cart: " + error);
+    }
+  }
+
   // fetch products
   useEffect(() => {
     fetchProducts();
@@ -53,6 +89,18 @@ function App() {
     fetchCart();
     //console.log("Adding item to the cart")
   }
+  const deleteFromCart = async(productId) => {
+    await deleteProductFromCart(productId);
+    fetchCart();
+  }
+  const decrementCartProduct = async(cartProduct) => {
+    await decrementOneProduct(cartProduct);
+    fetchCart();
+  }
+  const incrementCartProduct = async(cartProduct) => {
+    await incrementOneProduct(cartProduct);
+    fetchCart();
+  }
   
   return (
     <div className="page">
@@ -61,9 +109,8 @@ function App() {
         <div className="column">
           <h1>Products</h1>
           {products.map( product => (
-            <div key={product.id}>
+            <div className="row" key={product.id}>
               <p>{product.name + ", " + product.price}</p>
-              <p>{product.id}</p>
               <button onClick={e => addToCart(product.id)}>Add to Cart</button>
             </div>
           ))}
@@ -71,11 +118,11 @@ function App() {
         <div className="column">
           <h1>Cart</h1>
           {cart.map( cartProduct => (
-            <div key={cartProduct.id}>
-              <p>{(products.find(element => element.id === cartProduct.id)).name}</p>
-              <button onClick={e => addToCart(product.id)}>-</button>
-              <button onClick={e => addToCart(product.id)}>+</button>
-              <button onClick={e => addToCart(product.id)}>Remove from Cart</button>
+            <div className="row" key={cartProduct.id}>
+              <p>{(products.find(element => element.id === cartProduct.id)).name + ", " + cartProduct.quantity}</p>
+              <button onClick={e => decrementCartProduct(cartProduct)}>-</button>
+              <button onClick={e => incrementCartProduct(cartProduct)}>+</button>
+              <button onClick={e => deleteFromCart(cartProduct.id)}>Remove from Cart</button>
             </div>
           ))}
         </div>
